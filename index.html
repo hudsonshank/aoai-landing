@@ -216,20 +216,29 @@
       align-items: center;
       gap: 2rem;
       background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 40%, transparent 70%);
-      padding: 4rem 6rem;
+      padding: 4rem clamp(1.5rem, 6vw, 6rem);
     }
 
     .hero-logo {
       width: clamp(180px, 22vw, 340px);
       height: auto;
+      max-width: 90vw;
       opacity: 0;
+      -webkit-animation: logoReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
       animation: logoReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
       filter: drop-shadow(0 0 60px rgba(66, 160, 94, 0.12));
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    @-webkit-keyframes logoReveal {
+      0% { opacity: 0; transform: scale(0.92) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     @keyframes logoReveal {
-      0% { opacity: 0; transform: scale(0.92) translateY(20px); filter: blur(8px) drop-shadow(0 0 60px rgba(66, 160, 94, 0.12)); }
-      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) drop-shadow(0 0 60px rgba(66, 160, 94, 0.12)); }
+      0% { opacity: 0; transform: scale(0.92) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     .hero-tagline {
@@ -272,8 +281,10 @@
     .scroll-indicator {
       position: absolute;
       bottom: 3rem;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      width: fit-content;
       z-index: 3;
       display: flex;
       flex-direction: column;
