@@ -8,6 +8,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Prefetch 3D car models so they're cached when user navigates to /pricing/ -->
+  <link rel="prefetch" href="/pricing/models/austin_mini_-_mini_cooper_-_1968.glb" as="fetch" crossorigin>
+  <link rel="prefetch" href="/pricing/models/2023_honda_civic_type_r.glb" as="fetch" crossorigin>
+  <link rel="prefetch" href="/pricing/models/ferrari_laferrari.glb" as="fetch" crossorigin>
+  <link rel="prefetch" href="/pricing/models/delorean_highpoly.glb" as="fetch" crossorigin>
   <style>
     /* ===== RESET & BASE ===== */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -18,9 +23,10 @@
       --white-pure: #FFFFFF;
       --silver: #8A919C;
       --silver-light: #B8C0CC;
-      --accent: #39FF14;
-      --accent-dim: rgba(57, 255, 20, 0.12);
-      --accent-glow: rgba(57, 255, 20, 0.3);
+      --accent: #42a05e;
+      --accent-light: #5cb876;
+      --accent-dim: rgba(66, 160, 94, 0.12);
+      --accent-glow: rgba(66, 160, 94, 0.3);
       --surface: #0A0A0A;
       --surface-elevated: #111111;
       --border: rgba(255, 255, 255, 0.06);
@@ -45,7 +51,7 @@
 
     ::selection {
       background: var(--accent);
-      color: var(--black);
+      color: var(--white-pure);
     }
 
     a {
@@ -88,6 +94,9 @@
       display: flex;
       gap: 2.5rem;
       list-style: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     .nav-links a {
@@ -118,21 +127,45 @@
     .nav-cta {
       font-family: var(--font-body);
       font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
+      font-weight: 600;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--black);
-      background: var(--accent);
-      padding: 0.65rem 1.6rem;
-      border: none;
+      color: var(--white-pure);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+      padding: 0.7rem 1.8rem;
+      border: 1px solid rgba(92, 184, 118, 0.4);
+      border-radius: 4px;
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-block;
+      text-decoration: none;
+      box-shadow:
+        0 0 12px rgba(66, 160, 94, 0.2),
+        0 0 30px rgba(66, 160, 94, 0.08);
+      animation: navCtaPulse 3s ease-in-out infinite;
     }
 
     .nav-cta:hover {
-      background: var(--white-pure);
-      transform: translateY(-1px);
-      box-shadow: 0 8px 30px rgba(0, 212, 170, 0.2);
+      background: linear-gradient(135deg, var(--accent-light) 0%, #6ec885 100%);
+      transform: translateY(-2px);
+      border-color: rgba(92, 184, 118, 0.7);
+      box-shadow:
+        0 4px 16px rgba(66, 160, 94, 0.35),
+        0 0 40px rgba(66, 160, 94, 0.15);
+      animation: none;
+    }
+
+    @keyframes navCtaPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 12px rgba(66, 160, 94, 0.2),
+          0 0 30px rgba(66, 160, 94, 0.08);
+      }
+      50% {
+        box-shadow:
+          0 0 18px rgba(66, 160, 94, 0.35),
+          0 0 44px rgba(66, 160, 94, 0.14);
+      }
     }
 
     /* ===== HERO ===== */
@@ -158,13 +191,16 @@
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0.3) 0%,
-        rgba(0, 0, 0, 0.15) 40%,
-        rgba(0, 0, 0, 0.4) 80%,
-        rgba(0, 0, 0, 0.95) 100%
-      );
+      background:
+        radial-gradient(ellipse at 50% 55%, rgba(0, 0, 0, 0.55) 0%, transparent 70%),
+        linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.3) 0%,
+          rgba(0, 0, 0, 0.25) 35%,
+          rgba(0, 0, 0, 0.45) 55%,
+          rgba(0, 0, 0, 0.6) 75%,
+          rgba(0, 0, 0, 0.95) 100%
+        );
       z-index: 2;
     }
 
@@ -176,6 +212,8 @@
       flex-direction: column;
       align-items: center;
       gap: 2rem;
+      background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 40%, transparent 70%);
+      padding: 4rem 6rem;
     }
 
     .hero-logo {
@@ -183,21 +221,22 @@
       height: auto;
       opacity: 0;
       animation: logoReveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
-      filter: drop-shadow(0 0 60px rgba(0, 212, 170, 0.08));
+      filter: drop-shadow(0 0 60px rgba(66, 160, 94, 0.12));
     }
 
     @keyframes logoReveal {
-      0% { opacity: 0; transform: scale(0.92) translateY(20px); filter: blur(8px) drop-shadow(0 0 60px rgba(0, 212, 170, 0.08)); }
-      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) drop-shadow(0 0 60px rgba(0, 212, 170, 0.08)); }
+      0% { opacity: 0; transform: scale(0.92) translateY(20px); filter: blur(8px) drop-shadow(0 0 60px rgba(66, 160, 94, 0.12)); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) drop-shadow(0 0 60px rgba(66, 160, 94, 0.12)); }
     }
 
     .hero-tagline {
       font-family: var(--font-display);
       font-size: clamp(1rem, 1.8vw, 1.4rem);
-      font-weight: 400;
-      color: var(--silver-light);
+      font-weight: 600;
+      color: var(--white-pure);
       letter-spacing: 0.35em;
       text-transform: uppercase;
+      text-shadow: 0 2px 30px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
       opacity: 0;
       animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
     }
@@ -212,11 +251,12 @@
 
     .hero-sub {
       font-family: var(--font-body);
-      font-size: clamp(0.9rem, 1.2vw, 1.05rem);
-      font-weight: 300;
-      color: var(--silver);
+      font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+      font-weight: 400;
+      color: var(--white);
       max-width: 480px;
       line-height: 1.7;
+      text-shadow: 0 2px 24px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.5);
       opacity: 0;
       animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 1.4s forwards;
     }
@@ -607,7 +647,7 @@
       font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--black);
+      color: var(--white-pure);
       background: var(--accent);
       padding: 1rem 2.5rem;
       border: none;
@@ -615,13 +655,16 @@
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
       overflow: hidden;
+      display: inline-block;
+      text-decoration: none;
+      text-align: center;
     }
 
     .btn-primary::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: var(--white-pure);
+      background: var(--accent-light);
       transform: translateY(101%);
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -649,6 +692,9 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-block;
+      text-decoration: none;
+      text-align: center;
     }
 
     .btn-secondary:hover {
@@ -834,16 +880,17 @@
 
   <!-- Navigation -->
   <nav class="nav" id="nav">
-    <a href="#" class="nav-logo">
+    <a href="/" class="nav-logo">
       <img src="assets/logo-white.png" alt="AOAI">
     </a>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
       <li><a href="#services">Services</a></li>
       <li><a href="#process">Process</a></li>
+      <li><a href="/pricing/">Pricing</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-    <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get Started</button>
+    <a class="nav-cta" href="#contact">Get Started</a>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
@@ -854,6 +901,7 @@
     <a href="#about" onclick="closeMobile()">About</a>
     <a href="#services" onclick="closeMobile()">Services</a>
     <a href="#process" onclick="closeMobile()">Process</a>
+    <a href="/pricing/" onclick="closeMobile()">Pricing</a>
     <a href="#contact" onclick="closeMobile()">Contact</a>
   </div>
 
@@ -888,20 +936,6 @@
         <div class="about-body reveal">
           <p>AOAI partners with forward-thinking organizations to design, build, and deploy AI systems that deliver measurable impact. From strategy through execution, we bridge the gap between what AI can do and what your business needs it to do.</p>
           <p>Our approach is grounded in real-world outcomes, not hype. Every engagement begins with understanding your operations, your data, and your goals, then building solutions that integrate seamlessly into how your teams already work.</p>
-          <div class="stat-row">
-            <div class="stat">
-              <div class="stat-number">50<span class="accent">+</span></div>
-              <div class="stat-label">AI Systems Deployed</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">3<span class="accent">x</span></div>
-              <div class="stat-label">Avg. Efficiency Gain</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">98<span class="accent">%</span></div>
-              <div class="stat-label">Client Retention</div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -1019,8 +1053,8 @@
         <h2 class="cta-heading">Ready to put AI<br>to <span class="accent">work</span>?</h2>
         <p class="cta-sub">Whether you're exploring what's possible or ready to build, we'd love to talk about where AI fits into your future.</p>
         <div class="cta-buttons">
-          <button class="btn-primary" onclick="window.location.href='mailto:hudson@autobahnconsultants.com'"><span>Start a Conversation</span></button>
-          <button class="btn-secondary" onclick="window.location.href='mailto:hudson@autobahnconsultants.com'">Learn More</button>
+          <a class="btn-primary" href="mailto:hudson@autobahnconsultants.com"><span>Start a Conversation</span></a>
+          <a class="btn-secondary" href="/pricing/">View Pricing</a>
         </div>
       </div>
     </div>
@@ -1030,12 +1064,13 @@
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-left">
-        <a href="#" class="footer-logo">
+        <a href="/" class="footer-logo">
           <img src="assets/logo-white.png" alt="AOAI">
         </a>
         <span class="footer-copy">&copy; 2026 AOAI. All rights reserved.</span>
       </div>
       <div class="footer-links">
+        <a href="/pricing/">Pricing</a>
         <a href="mailto:hudson@autobahnconsultants.com">Contact</a>
         <a href="#">Privacy</a>
         <a href="#">Terms</a>
