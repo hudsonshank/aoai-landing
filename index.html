@@ -1202,7 +1202,13 @@
       animation: sectionScanOverlay 12s linear infinite;
     }
 
-    .pricing-preview .section-pad { position: relative; z-index: 1; }
+    .pricing-preview .section-pad {
+      position: relative;
+      z-index: 1;
+      max-width: 1600px;
+      padding-left: clamp(1rem, 2vw, 2rem);
+      padding-right: clamp(1rem, 2vw, 2rem);
+    }
 
     .pricing-preview-header {
       text-align: center;
@@ -1282,9 +1288,9 @@
     </a>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
+      <li><a href="#pricing">Pricing</a></li>
       <li><a href="#services">Services</a></li>
       <li><a href="#process">Process</a></li>
-      <li><a href="#pricing">Pricing</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <a class="nav-cta" href="#contact">Get Started</a>
@@ -1296,9 +1302,9 @@
   <!-- Mobile Nav -->
   <div class="nav-mobile" id="navMobile">
     <a href="#about" onclick="closeMobile()">About</a>
+    <a href="#pricing" onclick="closeMobile()">Pricing</a>
     <a href="#services" onclick="closeMobile()">Services</a>
     <a href="#process" onclick="closeMobile()">Process</a>
-    <a href="#pricing" onclick="closeMobile()">Pricing</a>
     <a href="#contact" onclick="closeMobile()">Contact</a>
   </div>
 
@@ -1513,24 +1519,25 @@
       document.body.style.overflow = '';
     }
 
-    // === Scroll reveal ===
+    // === Scroll reveal (bidirectional — animates in AND out) ===
     const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
+        } else {
+          entry.target.classList.remove('visible');
         }
       });
     }, observerOptions);
 
     document.querySelectorAll('.reveal, .process-step').forEach(el => observer.observe(el));
 
-    // === Staggered reveal for service cards ===
+    // === Staggered reveal for service cards (bidirectional) ===
     const cardObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
+        const cards = entry.target.querySelectorAll('.service-card');
         if (entry.isIntersecting) {
-          const cards = entry.target.querySelectorAll('.service-card');
           cards.forEach((card, i) => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(30px)';
@@ -1540,14 +1547,19 @@
               card.style.transform = 'translateY(0)';
             }, i * 100);
           });
-          cardObserver.unobserve(entry.target);
+        } else {
+          cards.forEach(card => {
+            card.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+          });
         }
       });
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.services-grid').forEach(el => cardObserver.observe(el));
 
-    // === Process steps stagger ===
+    // === Process steps stagger (bidirectional) ===
     const stepObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1555,7 +1567,9 @@
           steps.forEach((step, i) => {
             setTimeout(() => step.classList.add('visible'), i * 150);
           });
-          stepObserver.unobserve(entry.target);
+        } else {
+          const steps = entry.target.querySelectorAll('.process-step');
+          steps.forEach(step => step.classList.remove('visible'));
         }
       });
     }, { threshold: 0.2 });
